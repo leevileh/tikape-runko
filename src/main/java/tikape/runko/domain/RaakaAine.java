@@ -1,15 +1,22 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package tikape.runko.domain;
 
-public class Drinkki {
-
+/**
+ *
+ * @author sami
+ */
+public class RaakaAine {
+    
     private Integer id;
     private String nimi;
-    private String ohje;
-
-    public Drinkki(Integer id, String nimi, String ohje) {
+    
+    public RaakaAine(Integer id, String nimi) {
         this.id = id;
         this.nimi = nimi;
-        this.ohje = ohje;
     }
 
     public Integer getId() {
@@ -28,13 +35,4 @@ public class Drinkki {
         this.nimi = nimi;
     }
     
-    public void setOhje(String ohje) {
-        this.ohje = ohje;
-    }
-    
-    public String getOhje() {
-        return this.ohje;
-    }
-    
-
 }

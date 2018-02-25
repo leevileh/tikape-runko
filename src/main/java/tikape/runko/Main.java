@@ -1,19 +1,24 @@
 package tikape.runko;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.HashMap;
 import spark.ModelAndView;
 import static spark.Spark.*;
 import spark.template.thymeleaf.ThymeleafTemplateEngine;
 import tikape.runko.database.Database;
-import tikape.runko.database.OpiskelijaDao;
+import tikape.runko.database.DrinkkiDao;
+import tikape.runko.database.DrinkkiRaakaAineDao;
+import tikape.runko.domain.Drinkki;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        Database database = new Database("jdbc:sqlite:opiskelijat.db");
-        database.init();
+        Database database = new Database("jdbc:sqlite:Drinkit.db");
+//        database.init();
 
-        OpiskelijaDao opiskelijaDao = new OpiskelijaDao(database);
+        DrinkkiDao drinkkiDao = new DrinkkiDao(database);
+        DrinkkiRaakaAineDao draDao = new DrinkkiRaakaAineDao(database);
 
         get("/", (req, res) -> {
             HashMap map = new HashMap<>();
@@ -22,18 +27,32 @@ public class Main {
             return new ModelAndView(map, "index");
         }, new ThymeleafTemplateEngine());
 
-        get("/opiskelijat", (req, res) -> {
+        get("/drinkit", (req, res) -> {
             HashMap map = new HashMap<>();
-            map.put("opiskelijat", opiskelijaDao.findAll());
+            map.put("drinkit", drinkkiDao.findAll());
 
-            return new ModelAndView(map, "opiskelijat");
+            return new ModelAndView(map, "drinkit");
         }, new ThymeleafTemplateEngine());
 
-        get("/opiskelijat/:id", (req, res) -> {
+        get("/drinkit/:id", (req, res) -> {
             HashMap map = new HashMap<>();
-            map.put("opiskelija", opiskelijaDao.findOne(Integer.parseInt(req.params("id"))));
+            Drinkki d = drinkkiDao.findOne(Integer.parseInt(req.params("id")));
+            map.put("drinkki", d);
+            map.put("raakaAineet", draDao.drinkinRaakaAineet(d.getNimi()));
 
-            return new ModelAndView(map, "opiskelija");
+            return new ModelAndView(map, "drinkki");
         }, new ThymeleafTemplateEngine());
+        
+        
+        post("/drinkit", (req, res) -> {
+            Connection conn = database.getConnection();
+            PreparedStatement stmnt = conn.prepareStatement("INSERT INTO Drinkki (nimi, ohje) VALUES (?, ?)");
+            stmnt.setString(1, req.queryParams("nimi"));
+            stmnt.setString(2, req.queryParams("ohje"));
+            stmnt.executeUpdate();
+            conn.close();
+            res.redirect("/drinkit");
+            return "";
+        });
     }
 }
