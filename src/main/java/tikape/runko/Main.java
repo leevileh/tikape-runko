@@ -2,7 +2,9 @@ package tikape.runko;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import spark.ModelAndView;
 import static spark.Spark.*;
 import spark.template.thymeleaf.ThymeleafTemplateEngine;
@@ -48,10 +50,31 @@ public class Main {
             Connection conn = database.getConnection();
             PreparedStatement stmnt = conn.prepareStatement("INSERT INTO Drinkki (nimi, ohje) VALUES (?, ?)");
             stmnt.setString(1, req.queryParams("nimi"));
-            stmnt.setString(2, req.queryParams("ohje"));
+            stmnt.setString(2, req.queryParams(""));
             stmnt.executeUpdate();
             conn.close();
-            res.redirect("/drinkit");
+            res.redirect("/raakaAineet");
+            return "";
+        });
+        
+        get("/raakaAineet", (req, res) -> {
+            HashMap map = new HashMap<>();
+            List<Drinkki> drinkit = drinkkiDao.findAll();
+           
+            
+            
+        
+            return new ModelAndView(map, "");
+        }, new ThymeleafTemplateEngine());
+        
+        post("/raakaAineet", (req, res) -> {
+            Connection conn = database.getConnection();
+            PreparedStatement stmnt = conn.prepareStatement("INSERT INTO DrinkkiRaakaAine (jarjestys, maara) VALUES (?,?)");
+            stmnt.setString(1, req.queryParams(null));
+            stmnt.setString(2, req.queryParams("maara"));
+            stmnt.executeUpdate();
+            conn.close();
+            res.redirect("/ohje");
             return "";
         });
     }
