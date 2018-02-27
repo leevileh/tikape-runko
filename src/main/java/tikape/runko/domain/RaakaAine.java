@@ -28,7 +28,7 @@ public class RaakaAine {
     }
 
     public String getNimi() {
-        return nimi;
+        return this.nimi;
     }
 
     public void setNimi(String nimi) {

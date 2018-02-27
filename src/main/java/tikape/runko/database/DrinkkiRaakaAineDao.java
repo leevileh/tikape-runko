@@ -68,19 +68,23 @@ public class DrinkkiRaakaAineDao implements Dao<DrinkkiRaakaAine, Integer> {
         return drinkkiRaakaAineet;
     }
 
-    public List<RaakaAine> drinkinRaakaAineet(String n) throws SQLException {
+    public List<String> drinkinRaakaAineet(String n) throws SQLException {
 
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT RaakaAine.id, RaakaAine.nimi FROM DrinkkiRaakaAine, RaakaAine, Drinkki WHERE DrinkkiRaakaAine.drinkki_id = Drinkki.id AND DrinkkiRaakaAine.raakaAine_id = RaakaAine.id AND Drinkki.nimi = ?");
+        PreparedStatement stmt = connection.prepareStatement("SELECT RaakaAine.nimi, DrinkkiRaakaAine.maara "
+                + "FROM DrinkkiRaakaAine, RaakaAine, Drinkki "
+                + "WHERE DrinkkiRaakaAine.drinkki_id = Drinkki.id "
+                + "AND DrinkkiRaakaAine.raakaAine_id = RaakaAine.id "
+                + "AND Drinkki.nimi = ?");
         stmt.setString(1, n);
 
         ResultSet rs = stmt.executeQuery();
-        List<RaakaAine> raakaAineet = new ArrayList<>();
+        List<String> raakaAineet = new ArrayList<>();
         while (rs.next()) {
-            Integer id = rs.getInt("id");
             String nimi = rs.getString("nimi");
+            String maara = rs.getString("maara");
 
-            raakaAineet.add(new RaakaAine(id, nimi));
+            raakaAineet.add(nimi + ", " + maara);
         }
 
         rs.close();
