@@ -60,7 +60,7 @@ public class Main {
             HashMap map = new HashMap<>();
             List<Drinkki> drinkit = drinkkiDao.findAll();
             Drinkki vika = drinkit.get(drinkit.size()-1);
-            map.put("viimeinen", vika);
+            map.put("viimeinen", vika.getNimi());
 
             return new ModelAndView(map, "raakaAineet");
         }, new ThymeleafTemplateEngine());
