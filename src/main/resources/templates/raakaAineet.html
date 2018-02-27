@@ -7,15 +7,23 @@
     </head>
 
     <body>
-        <font face="verdana"/>
         <div align="center">
         <h1><span th:text="${viimeinen}">drinkki</span>!</h1>
         <form name="raakaAine" action="raakaAine" method="POST">
             <p>Raaka-aine:</p>
-            <input type="text" value="nimi" name="nimi" />
+            <input type="text" name="nimi" />
             <p>Määrä:</p>
             <input type="text" value="1 dl" name="määrä" />
             <input type="submit" value="lisää" name="lisää" />
+        </form>
+        <p>Lisättävät raaka-aineet:</p>
+        <ol>
+            <li th:each="DrinkkiRaakaAine: ${DrinkkiRaakaAineet}">
+                 <p th:text="${DrinkkiRaakaAine}">DrinkkiraakaAine</p>
+            </li>
+        </ol>
+        <form name="seuraava" action="ohjeeseen" method="POST">
+            <input type="submit" value="Kaikki raaka-aineet lisätty" name="ohjeeseen" />
         </form>
         </div>
     </body>
