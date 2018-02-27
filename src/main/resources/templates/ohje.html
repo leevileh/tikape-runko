@@ -9,12 +9,9 @@
     <body>
         <font face="verdana"/>
         <div align="center">
-        <h1>Mixaa omat drinkit!</h1>
-
-        <p>Täältä löydät lempidrinkkisi valmistusohjeet!</p>
-        <p>Voit myös luoda omat reseptisi ja jakaa ne ystäviesi kanssa!</p>
-
-        <p><a href="/drinkit">Drinkkilista.</a></p>
+        <h1><span th:text="${viimeinen}">drinkki</span>!</h1>
+        <p>Drinkin <span th:text="${drinkki.nimi}">drinkki</span> teko-ohjeet:</p>
+        <p><span th:text="${drinkki.ohje}">drinkki</span></p>
         </div>
     </body>
 </html>
