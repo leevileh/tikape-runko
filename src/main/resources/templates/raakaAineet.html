@@ -9,15 +9,13 @@
     <body>
         <div align="center">
         <h1><span th:text="${drinkki.nimi}">drinkki</span>!</h1>
-        
-        <ol>
-            <li th:each="raakaAine: ${raakaAineet}">
-                 <p th:text="${raakaAine}">raakaAine</p>
-            </li>
-        </ol>
-
-        <p>Drinkin <span th:text="${drinkki.nimi}">drinkki</span> teko-ohjeet:</p>
-        <p><span th:text="${drinkki.ohje}">drinkki</span></p>
+        <form name="raakaAine" action="raakaAine" method="POST">
+            <p>Nimi:</p>
+            <input type="text" value="nimi" name="nimi" />
+            <p>Määrä:</p>
+            <input type="text" value="määrä" name="määrä" />
+            <input type="submit" value="lisää" name="lisää" />
+        </form>
         </div>
     </body>
 </html>
