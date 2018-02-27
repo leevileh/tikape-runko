@@ -48,9 +48,8 @@ public class Main {
         
         post("/drinkit", (req, res) -> {
             Connection conn = database.getConnection();
-            PreparedStatement stmnt = conn.prepareStatement("INSERT INTO Drinkki (nimi, ohje) VALUES (?, ?)");
+            PreparedStatement stmnt = conn.prepareStatement("INSERT INTO Drinkki (nimi) VALUES (?)");
             stmnt.setString(1, req.queryParams("nimi"));
-            stmnt.setString(2, req.queryParams(""));
             stmnt.executeUpdate();
             conn.close();
             res.redirect("/raakaAineet");
@@ -60,21 +59,20 @@ public class Main {
         get("/raakaAineet", (req, res) -> {
             HashMap map = new HashMap<>();
             List<Drinkki> drinkit = drinkkiDao.findAll();
-           
-            
-            
-        
-            return new ModelAndView(map, "");
+            Drinkki vika = drinkit.get(drinkit.size()-1);
+            map.put("viimeinen", vika);
+
+            return new ModelAndView(map, "raakaAineet");
         }, new ThymeleafTemplateEngine());
         
         post("/raakaAineet", (req, res) -> {
             Connection conn = database.getConnection();
-            PreparedStatement stmnt = conn.prepareStatement("INSERT INTO DrinkkiRaakaAine (jarjestys, maara) VALUES (?,?)");
-            stmnt.setString(1, req.queryParams(null));
-            stmnt.setString(2, req.queryParams("maara"));
+            PreparedStatement stmnt = conn.prepareStatement("INSERT INTO DrinkkiRaakaAine (maara) VALUES (?)");
+            
+            stmnt.setString(1, req.queryParams("maara"));
             stmnt.executeUpdate();
             conn.close();
-            res.redirect("/ohje");
+            res.redirect("/raakaAineet");
             return "";
         });
     }
