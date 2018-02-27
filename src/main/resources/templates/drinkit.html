@@ -7,9 +7,11 @@
     </head>
 
     <body> 
+        <font face="verdana"/>
         <div align="center"> 
         <h1>Drinkkilista</h1>
 
+        
         <ol>
             <li th:each="drinkki: ${drinkit}">
                  <a th:href="${'/drinkit/' + drinkki.id}"><span th:text="${drinkki.nimi}">drinkki</span></a>
