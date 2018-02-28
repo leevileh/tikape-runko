@@ -1,3 +1,3 @@
 # tikape-runko
 
-Sovellus drinkkien luomiseen.
+Sovellus drinkkien luomiseen ja tarkasteluun.
