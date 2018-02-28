@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import spark.ModelAndView;
+import spark.Spark;
 import static spark.Spark.*;
 import spark.template.thymeleaf.ThymeleafTemplateEngine;
 import tikape.runko.database.Database;
@@ -17,11 +18,16 @@ import tikape.runko.domain.Drinkki;
 import tikape.runko.domain.RaakaAine;
 
 public class Main {
-    
+
     public static String drinkkiNimi = "";
     public static Map<String, String> raakaAineValimuisti = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
+
+        if (System.getenv("PORT") != null) {
+            Spark.port(Integer.valueOf(System.getenv("PORT")));
+        }
+
         Database database = new Database("jdbc:sqlite:Drinkit.db");
 //        database.init();
 
@@ -53,11 +59,10 @@ public class Main {
 
             return new ModelAndView(map, "drinkki");
         }, new ThymeleafTemplateEngine());
-        
-        
+
         post("/drinkit", (req, res) -> {
             drinkkiNimi = req.queryParams("nimi");
-            
+
             if (!drinkkiNimi.isEmpty()) {
                 res.redirect("/raakaAineet");
                 return "";
@@ -65,9 +70,9 @@ public class Main {
                 res.redirect("/drinkit");
                 return "";
             }
-            
+
         });
-        
+
         get("/raakaAineet", (req, res) -> {
             HashMap map = new HashMap<>();
             List<Drinkki> drinkit = drinkkiDao.findAll();
@@ -78,7 +83,7 @@ public class Main {
 
             return new ModelAndView(map, "raakaAineet");
         }, new ThymeleafTemplateEngine());
-        
+
         post("/raakaAineet", (req, res) -> {
             if (!req.queryParams("nimi").isEmpty() && !req.queryParams("määrä").isEmpty()) {
                 raakaAineValimuisti.put(req.queryParams("nimi"), req.queryParams("määrä"));
@@ -88,50 +93,49 @@ public class Main {
                 res.redirect("/raakaAineet");
                 return "";
             }
-            
+
         });
-        
+
         get("/luoValmistusOhje", (req, res) -> {
             HashMap map = new HashMap<>();
             List<Drinkki> drinkit = drinkkiDao.findAll();
             map.put("viimeinen", drinkkiNimi);
-            
+
             map.put("luoValmistusOhje", draDao.drinkinRaakaAineet(drinkkiNimi));
 
             return new ModelAndView(map, "luoValmistusOhje");
         }, new ThymeleafTemplateEngine());
-        
+
         post("/luoValmistusOhje", (req, res) -> {
-           Connection conn = database.getConnection();
-           
-           String drinkkiOhje = req.queryParams("ohje");
-           PreparedStatement stmnt = conn.prepareStatement("INSERT INTO Drinkki (nimi, ohje) VALUES (?,?)");
-           stmnt.setString(1, drinkkiNimi);
-           stmnt.setString(2, drinkkiOhje);
-           stmnt.executeUpdate();
-           
-           stmnt = conn.prepareStatement("INSERT INTO RaakaAine (nimi) VALUES (?)");
-           List<String> nimet = new ArrayList<>();
-           raakaAineValimuisti.entrySet().stream().forEach(r -> {
-               nimet.add(r.getKey());
-           });
-           for (int i = 0; i < nimet.size(); i++) {
-               stmnt.setString(1, nimet.get(i));
-               stmnt.executeUpdate();
-           }
-           
-           stmnt = conn.prepareStatement("INSERT INTO DrinkkiRaakaAine (drinkki_id, raakaAine_id, maara) VALUES (?, ?, ?)");
-           for(int i = 0; i < raakaAineValimuisti.size(); i++) {
+            Connection conn = database.getConnection();
+
+            String drinkkiOhje = req.queryParams("ohje");
+            PreparedStatement stmnt = conn.prepareStatement("INSERT INTO Drinkki (nimi, ohje) VALUES (?,?)");
+            stmnt.setString(1, drinkkiNimi);
+            stmnt.setString(2, drinkkiOhje);
+            stmnt.executeUpdate();
+
+            stmnt = conn.prepareStatement("INSERT INTO RaakaAine (nimi) VALUES (?)");
+            List<String> nimet = new ArrayList<>();
+            raakaAineValimuisti.entrySet().stream().forEach(r -> {
+                nimet.add(r.getKey());
+            });
+            for (int i = 0; i < nimet.size(); i++) {
+                stmnt.setString(1, nimet.get(i));
+                stmnt.executeUpdate();
+            }
+
+            stmnt = conn.prepareStatement("INSERT INTO DrinkkiRaakaAine (drinkki_id, raakaAine_id, maara) VALUES (?, ?, ?)");
+            for (int i = 0; i < raakaAineValimuisti.size(); i++) {
                 stmnt.setInt(1, drinkkiDao.haeNimella(drinkkiNimi).getId());
                 RaakaAine ra = raakaAineDao.haeNimella(nimet.get(i));
                 stmnt.setInt(2, ra.getId());
                 stmnt.setString(3, raakaAineValimuisti.get(ra.getNimi()));
                 stmnt.executeUpdate();
-           }
-           
-           
-           res.redirect("/drinkit");
-           return "";
+            }
+
+            res.redirect("/drinkit");
+            return "";
         });
     }
 }
