@@ -6,6 +6,7 @@
 package tikape.runko.database;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,10 +21,19 @@ public class DrinkkiDao implements Dao<Drinkki, Integer> {
     public DrinkkiDao(Database database) {
         this.database = database;
     }
+    
+    public static Connection getConnection() throws SQLException {
+        String dbUrl = System.getenv("JDBC_DATABASE_URL");
+        if (dbUrl != null && dbUrl.length() > 0) {
+            return DriverManager.getConnection(dbUrl);
+        }
+
+        return DriverManager.getConnection("jdbc:sqlite:Drinkit.db");
+    }
 
     @Override
     public Drinkki findOne(Integer key) throws SQLException {
-        Connection connection = database.getConnection();
+        Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Drinkki WHERE id = ?");
         stmt.setObject(1, key);
 
@@ -47,7 +57,7 @@ public class DrinkkiDao implements Dao<Drinkki, Integer> {
     }
     
     public Drinkki haeNimella(String nimi) throws SQLException {
-        Connection connection = database.getConnection();
+        Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Drinkki WHERE nimi = ?");
         stmt.setString(1, nimi);
 
@@ -73,7 +83,7 @@ public class DrinkkiDao implements Dao<Drinkki, Integer> {
     @Override
     public List<Drinkki> findAll() throws SQLException {
 
-        Connection connection = database.getConnection();
+        Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Drinkki");
 
         ResultSet rs = stmt.executeQuery();

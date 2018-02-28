@@ -6,6 +6,7 @@
 package tikape.runko.database;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,10 +22,19 @@ public class DrinkkiRaakaAineDao implements Dao<DrinkkiRaakaAine, Integer> {
     public DrinkkiRaakaAineDao(Database database) {
         this.database = database;
     }
+    
+    public static Connection getConnection() throws SQLException {
+        String dbUrl = System.getenv("JDBC_DATABASE_URL");
+        if (dbUrl != null && dbUrl.length() > 0) {
+            return DriverManager.getConnection(dbUrl);
+        }
+
+        return DriverManager.getConnection("jdbc:sqlite:Drinkit.db");
+    }    
 
     @Override
     public DrinkkiRaakaAine findOne(Integer key) throws SQLException {
-        Connection connection = database.getConnection();
+        Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM DrinkkiRaakaAine WHERE id = ?");
         stmt.setObject(1, key);
 
@@ -49,7 +59,7 @@ public class DrinkkiRaakaAineDao implements Dao<DrinkkiRaakaAine, Integer> {
     @Override
     public List<DrinkkiRaakaAine> findAll() throws SQLException {
 
-        Connection connection = database.getConnection();
+        Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM DrinkkiRaakaAine");
 
         ResultSet rs = stmt.executeQuery();
@@ -70,7 +80,7 @@ public class DrinkkiRaakaAineDao implements Dao<DrinkkiRaakaAine, Integer> {
 
     public List<String> drinkinRaakaAineet(String n) throws SQLException {
 
-        Connection connection = database.getConnection();
+        Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT RaakaAine.nimi, DrinkkiRaakaAine.maara "
                 + "FROM DrinkkiRaakaAine, RaakaAine, Drinkki "
                 + "WHERE DrinkkiRaakaAine.drinkki_id = Drinkki.id "

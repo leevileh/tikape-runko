@@ -6,6 +6,7 @@
 package tikape.runko.database;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,15 +20,24 @@ import tikape.runko.domain.RaakaAine;
  * @author sami
  */
 public class RaakaAineDao implements Dao<RaakaAine, Integer> {
-    
+
     private Database database;
-    
+
     public RaakaAineDao(Database database) {
         this.database = database;
     }
-    
+
+    public static Connection getConnection() throws SQLException {
+        String dbUrl = System.getenv("JDBC_DATABASE_URL");
+        if (dbUrl != null && dbUrl.length() > 0) {
+            return DriverManager.getConnection(dbUrl);
+        }
+
+        return DriverManager.getConnection("jdbc:sqlite:Drinkit.db");
+    }
+
     public RaakaAine haeNimella(String nimi) throws SQLException {
-        Connection connection = database.getConnection();
+        Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM RaakaAine WHERE nimi = ?");
         stmt.setString(1, nimi);
 
@@ -48,10 +58,10 @@ public class RaakaAineDao implements Dao<RaakaAine, Integer> {
 
         return d;
     }
-    
+
     @Override
     public RaakaAine findOne(Integer key) throws SQLException {
-        Connection connection = database.getConnection();
+        Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM RaakaAine WHERE id = ?");
         stmt.setObject(1, key);
 
@@ -72,12 +82,11 @@ public class RaakaAineDao implements Dao<RaakaAine, Integer> {
 
         return d;
     }
-    
+
     @Override
     public List<RaakaAine> findAll() throws SQLException {
-        
 
-        Connection connection = database.getConnection();
+        Connection connection = getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM RaakaAine");
 
         ResultSet rs = stmt.executeQuery();
@@ -95,10 +104,10 @@ public class RaakaAineDao implements Dao<RaakaAine, Integer> {
 
         return raakaAineet;
     }
-    
+
     @Override
     public void delete(Integer key) throws SQLException {
         // ei toteutettu
     }
-    
+
 }
