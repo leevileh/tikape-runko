@@ -10,12 +10,13 @@
         <div align="center"> 
         <h1>Drinkkilista</h1>
 
-        
-        <ol>
+        <div align="center">
+        <ul>
             <li th:each="drinkki: ${drinkit}">
                  <a th:href="${'/drinkit/' + drinkki.id}"><span th:text="${drinkki.nimi}">drinkki</span></a>
             </li>
-        </ol>
+        </ul>
+        </div>
         <form action="/drinkit" method="POST">
             <p>Luo oma drinkkisi!</p>
             <p></p>

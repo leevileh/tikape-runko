@@ -10,12 +10,15 @@
         <div align="center">
         <h1><span th:text="${drinkki.nimi}">drinkki</span>!</h1>
         
-        <ol>
+        <br/>
+        <p>Tarvittavat ainekset:</p>
+        <ul>
             <li th:each="raakaAine: ${raakaAineet}">
                  <p th:text="${raakaAine}">raakaAine</p>
             </li>
-        </ol>
+        </ul>
 
+        <br/>
         <p>Drinkin <span th:text="${drinkki.nimi}">drinkki</span> teko-ohjeet:</p>
         <p><span th:text="${drinkki.ohje}">drinkki</span></p>
         </div>

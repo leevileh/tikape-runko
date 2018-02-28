@@ -9,22 +9,23 @@
     <body>
         <div align="center">
         <h1><span th:text="${viimeinen}">drinkki</span>!</h1>
-        <form name="raakaAine" action="raakaAine" method="POST">
+        <form name="raakaAine" action="raakaAineet" method="POST">
             <p>Raaka-aine:</p>
             <input type="text" name="nimi" />
             <p>Määrä:</p>
             <input type="text" value="1 dl" name="määrä" />
             <input type="submit" value="lisää" name="lisää" />
         </form>
-        <p>Lisättävät raaka-aineet:</p>
-        <ol>
+        <p></p>
+        <ul>
             <li th:each="DrinkkiRaakaAine: ${DrinkkiRaakaAineet}">
                  <p th:text="${DrinkkiRaakaAine}">DrinkkiraakaAine</p>
             </li>
-        </ol>
-        <form name="seuraava" action="ohjeeseen" method="POST">
-            <input type="submit" value="Kaikki raaka-aineet lisätty" name="ohjeeseen" />
-        </form>
+        </ul>
+        <p>Kun olet lisännyt kaikki raaka-aineet:</p>
+        <p><a href = "/luoValmistusOhje">Luo tarkempi valmistusohje</a></p>
+        <br/>
+        <p><a href = "/drinkit">Palaa tallentamatta</a></p>
         </div>
     </body>
 </html>
