@@ -1,7 +1,9 @@
 package tikape.runko;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,12 +23,23 @@ public class Main {
 
     public static String drinkkiNimi = "";
     public static Map<String, String> raakaAineValimuisti = new HashMap<>();
+    
+    public static Connection getConnection() throws SQLException {
+        String dbUrl = System.getenv("JDBC_DATABASE_URL");
+        if (dbUrl != null && dbUrl.length() > 0) {
+            return DriverManager.getConnection(dbUrl);
+        }
+
+        return DriverManager.getConnection("jdbc:sqlite:Drinkit.db");
+    }
 
     public static void main(String[] args) throws Exception {
 
         if (System.getenv("PORT") != null) {
             Spark.port(Integer.valueOf(System.getenv("PORT")));
         }
+        
+        
 
         Database database = new Database("jdbc:sqlite:Drinkit.db");
 //        database.init();
@@ -107,7 +120,7 @@ public class Main {
         }, new ThymeleafTemplateEngine());
 
         post("/luoValmistusOhje", (req, res) -> {
-            Connection conn = database.getConnection();
+            Connection conn = getConnection();
 
             String drinkkiOhje = req.queryParams("ohje");
             PreparedStatement stmnt = conn.prepareStatement("INSERT INTO Drinkki (nimi, ohje) VALUES (?,?)");
